@@ -53,10 +53,12 @@ Run the Streamlit container:
 ```powershell
 docker run --rm -p 8501:8501 insurance-status streamlit run streamlit_app.py --server.address=0.0.0.0 --server.port=8501
 ```
-
+- open at link http://13.61.32.36:8501/
 ## 6. Common issues and fixes
 
 - If Python cannot find FastAPI, Streamlit, or pandas, reinstall the dependencies with `pip install -r requirements.txt`.
 - If the container build fails, make sure the requirements file is saved as UTF-8 and contains the packages listed below.
 - If the model file is missing, verify that the file exists at [model/model.pkl](model/model.pkl).
 - If the API cannot start, confirm that the current working directory is the project root or that the model path resolves correctly.
+
+- 
