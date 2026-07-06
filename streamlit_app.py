@@ -1,11 +1,9 @@
 import streamlit as st
-import requests
-
-API_URL = "http://127.0.0.1:8000/pred"
+from model.predict import predict_output
 
 st.set_page_config(page_title="Insurance Prediction", page_icon="💡", layout="centered")
 st.title("Insurance Charges Prediction")
-st.write("Use this form to send input data to your prediction API and display a formatted result.")
+st.write("Use this form to generate a prediction directly with the trained model.")
 
 with st.form("prediction_form"):
     age = st.number_input("Age", min_value=0, max_value=120, value=40)
@@ -26,23 +24,12 @@ if submit_button:
         "region": region,
     }
 
-    st.info(f"Sending request to: {API_URL}")
-
     try:
-        response = requests.post(API_URL, json=payload, timeout=10)
-        response.raise_for_status()
-        prediction_data = response.json()
+        prediction_value = predict_output(payload)
+        formatted = f"{float(prediction_value):,.2f}"
+        st.success("Prediction received")
+        st.metric(label="Estimated Insurance Charge", value=f"${formatted}")
+    except Exception as exc:
+        st.error(f"Prediction failed: {exc}")
 
-        if "prediction" not in prediction_data:
-            st.error("API response did not include a prediction.")
-        else:
-            prediction_value = prediction_data["prediction"]
-            formatted = f"{prediction_value:,.2f}"
-            st.success("Prediction received")
-            st.metric(label="Estimated Insurance Charge", value=f"${formatted}")
-            with st.expander("Raw API response"):
-                st.json(prediction_data)
-    except requests.exceptions.RequestException as exc:
-        st.error(f"Request failed: {exc}")
-    except ValueError:
-        st.error("Unable to parse API response as JSON.")
+
